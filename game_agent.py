@@ -34,9 +34,9 @@ def custom_score(game, player):
     float
         The heuristic value of the current game state to the specified player.
     """
-    # TODO: finish this function!
-    # raise NotImplementedError
-
+    # MYLES IMPLEMENTATION TODO
+    print("In custom score stub")
+    return 7 
 
 def custom_score_2(game, player):
     """Calculate the heuristic value of a game state from the point of view
@@ -212,6 +212,7 @@ class MinimaxPlayer(IsolationPlayer):
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
 
+        # MYLES IMPLEMENTATION TODO
         legal_moves = game.get_legal_moves()
         if not legal_moves:
             return (-1, -1)
