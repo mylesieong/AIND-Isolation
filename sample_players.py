@@ -254,12 +254,14 @@ class HumanPlayer():
 
 if __name__ == "__main__":
     from isolation import Board
+    from game_agent import MinimaxPlayer
 
     # create an isolation board (by default 7x7)
     player1 = RandomPlayer()
-    player2 = GreedyPlayer()
+    #player2 = GreedyPlayer()
+    player2 = MinimaxPlayer()
     game = Board(player1, player2)
-    print("Player 1 (Random Player) vs. Player 2 (Greedy Player)")
+    print("Player 1 (Random Player) vs. Player 2 (My Player)")
 
     # place player 1 on the board at row 2, column 3, then place player 2 on
     # the board at row 0, column 5; display the resulting board state.  Note
