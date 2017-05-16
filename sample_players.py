@@ -259,6 +259,7 @@ if __name__ == "__main__":
     player1 = RandomPlayer()
     player2 = GreedyPlayer()
     game = Board(player1, player2)
+    print("Player 1 (Random Player) vs. Player 2 (Greedy Player)")
 
     # place player 1 on the board at row 2, column 3, then place player 2 on
     # the board at row 0, column 5; display the resulting board state.  Note
@@ -271,19 +272,26 @@ if __name__ == "__main__":
     assert(player1 == game.active_player)
 
     # get a list of the legal moves available to the active player
+    print("Player 1's available moves:")
     print(game.get_legal_moves())
 
     # get a successor of the current state by making a copy of the board and
     # applying a move. Notice that this does NOT change the calling object
     # (unlike .apply_move()).
-    new_game = game.forecast_move((1, 1))
-    assert(new_game.to_string() != game.to_string())
-    print("\nOld state:\n{}".format(game.to_string()))
-    print("\nNew state:\n{}".format(new_game.to_string()))
+    #new_game = game.forecast_move((1, 1))
+    #assert(new_game.to_string() != game.to_string())
+    #print("\nOld state:\n{}".format(game.to_string()))
+    #print("Take (1,1) as new move")
+    #print("\nNew state:\n{}".format(new_game.to_string()))
 
     # play the remainder of the game automatically -- outcome can be "illegal
     # move", "timeout", or "forfeit"
     winner, history, outcome = game.play()
     print("\nWinner: {}\nOutcome: {}".format(winner, outcome))
     print(game.to_string())
-    print("Move history:\n{!s}".format(history))
+    # print("Move history:\n{!s}".format(history))
+    temp_index = 0
+    for temp in history:
+        temp_index = temp_index + 1
+        if temp_index % 2 == 0: print("Player2 moves {}".format(temp))
+        if temp_index % 2 == 1: print("Player1 moves {}".format(temp))
