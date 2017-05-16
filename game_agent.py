@@ -35,8 +35,14 @@ def custom_score(game, player):
         The heuristic value of the current game state to the specified player.
     """
     # MYLES IMPLEMENTATION TODO
-    print("In custom score stub")
-    return 7 
+    # this is open_move_score
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+
+    return float(len(game.get_legal_moves(player)))
 
 def custom_score_2(game, player):
     """Calculate the heuristic value of a game state from the point of view
@@ -214,11 +220,28 @@ class MinimaxPlayer(IsolationPlayer):
 
         # MYLES IMPLEMENTATION TODO
         legal_moves = game.get_legal_moves()
-        if not legal_moves:
-            return (-1, -1)
-        _, move = max([(self.score(game.forecast_move(m), self), m) for m in legal_moves])
+        
+        _, move = max([(self.minlevel(game.forecast_move(m), depth - 1), m) for m in legal_moves])
+
         return move
 
+    def minlevel(self, game, depth):
+        print("    In minlevel method at depth:{}".format(depth)) #debug
+        legal_moves = game.get_legal_moves(None)
+        if depth > 0 :
+            return min([self.maxlevel(game.forecast_move(m), depth -1 ) for m in legal_moves])
+        else:
+            print("    @ End node, return custome_score()")
+            return self.score(game, self)
+
+    def maxlevel(self, game, depth):
+        print("    In maxlevel method at depth:{}".format(depth)) #debug
+        legal_moves = game.get_legal_moves(None)
+        if depth > 0 :
+            return max([self.minlevel(game.forecast_move(m), depth -1 ) for m in legal_moves])
+        else:
+            print("    @ End node, return custome_score()")
+            return self.score(game, self)
 
 class AlphaBetaPlayer(IsolationPlayer):
     """Game-playing agent that chooses a move using iterative deepening minimax
