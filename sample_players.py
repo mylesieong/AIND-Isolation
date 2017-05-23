@@ -255,11 +255,13 @@ class HumanPlayer():
 if __name__ == "__main__":
     from isolation import Board
     from game_agent import MinimaxPlayer
+    from game_agent import AlphaBetaPlayer
 
     # create an isolation board (by default 7x7)
     player1 = RandomPlayer()
     #player2 = GreedyPlayer()
-    player2 = MinimaxPlayer()
+    # player2 = MinimaxPlayer()
+    player2 = AlphaBetaPlayer()
     game = Board(player1, player2)
     print("Player 1 (Random Player) vs. Player 2 (My Player)")
 
