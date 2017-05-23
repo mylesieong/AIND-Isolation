@@ -292,7 +292,10 @@ class AlphaBetaPlayer(IsolationPlayer):
 
         legal_moves = game.get_legal_moves()
         
-        _, move = max([(self.min_value(game.forecast_move(m), depth - 1, alpha, beta), m) for m in legal_moves])
+        if legal_moves:
+            _, move = max([(self.min_value(game.forecast_move(m), depth - 1, alpha, beta), m) for m in legal_moves])
+        else:
+            move = (-1, -1)
 
         return move
 
