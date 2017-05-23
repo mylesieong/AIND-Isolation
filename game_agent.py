@@ -161,49 +161,21 @@ class MinimaxPlayer(IsolationPlayer):
         """
         self.time_left = time_left
 
-        # Initialize the best move so that this function returns something
-        # in case the search fails due to timeout
         best_move = (-1, -1)
 
         try:
-            # The try/except block will automatically catch the exception
-            # raised when the timer is about to expire.
             return self.minimax(game, self.search_depth)
 
         except SearchTimeout:
+            print("Timeout, set the return move as first of legal moves")
+            best_move = game.get_legal_moves()[0]
             pass  # Handle any actions required after timeout as needed
 
-        # Return the best move from the last completed search iteration
+        print("Best move of this turn: {}".format(best_move))
         return best_move
 
     def minimax(self, game, depth):
-        """Implement depth-limited minimax search algorithm as described in
-        the lectures.
-
-        This should be a modified version of MINIMAX-DECISION in the AIMA text.
-        https://github.com/aimacode/aima-pseudocode/blob/master/md/Minimax-Decision.md
-
-        **********************************************************************
-            You MAY add additional methods to this class, or define helper
-                 functions to implement the required functionality.
-        **********************************************************************
-
-        Parameters
-        ----------
-        game : isolation.Board
-            An instance of the Isolation game `Board` class representing the
-            current game state
-
-        depth : int
-            Depth is an integer representing the maximum number of plies to
-            search in the game tree before aborting
-
-        Returns
-        -------
-        (int, int)
-            The board coordinates of the best move found in the current search;
-            (-1, -1) if there are no legal moves
-
+        """
         Notes
         -----
             (1) You MUST use the `self.score()` method for board evaluation
@@ -218,30 +190,45 @@ class MinimaxPlayer(IsolationPlayer):
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
 
-        # MYLES IMPLEMENTATION TODO
         legal_moves = game.get_legal_moves()
         
-        _, move = max([(self.minlevel(game.forecast_move(m), depth - 1), m) for m in legal_moves])
+        _, move = max([(self.min_value(game.forecast_move(m), depth - 1), m) for m in legal_moves])
 
         return move
 
-    def minlevel(self, game, depth):
-        print("    In minlevel method at depth:{}".format(depth)) #debug
-        legal_moves = game.get_legal_moves(None)
-        if depth > 0 :
-            return min([self.maxlevel(game.forecast_move(m), depth -1 ) for m in legal_moves])
-        else:
-            print("    @ End node, return custome_score()")
-            return self.score(game, self)
+    def min_value(self, game, depth):
+        """
+        print("    In min_value method at depth:{}".format(depth)) #debug
+        """
+        if self.time_left() < self.TIMER_THRESHOLD:
+            raise SearchTimeout()
 
-    def maxlevel(self, game, depth):
-        print("    In maxlevel method at depth:{}".format(depth)) #debug
-        legal_moves = game.get_legal_moves(None)
-        if depth > 0 :
-            return max([self.minlevel(game.forecast_move(m), depth -1 ) for m in legal_moves])
-        else:
-            print("    @ End node, return custome_score()")
+        if depth == 0 :
             return self.score(game, self)
+        
+        legal_moves = game.get_legal_moves(None)
+
+        if not legal_moves:
+            return float("inf")
+
+        return min([self.max_value(game.forecast_move(m), depth -1 ) for m in legal_moves])
+
+    def max_value(self, game, depth):
+        """
+        print("    In max_value method at depth:{}".format(depth)) #debug
+        """
+        if self.time_left() < self.TIMER_THRESHOLD:
+            raise SearchTimeout()
+
+        if depth == 0 :
+            return self.score(game, self)
+        
+        legal_moves = game.get_legal_moves(None)
+
+        if not legal_moves:
+            return float("-inf")
+
+        return max([self.min_value(game.forecast_move(m), depth -1 ) for m in legal_moves])
 
 class AlphaBetaPlayer(IsolationPlayer):
     """Game-playing agent that chooses a move using iterative deepening minimax
@@ -280,6 +267,21 @@ class AlphaBetaPlayer(IsolationPlayer):
             (-1, -1) if there are no available legal moves.
         """
         self.time_left = time_left
+
+        # Initialize the best move so that this function returns something
+        # in case the search fails due to timeout
+        best_move = (-1, -1)
+
+        try:
+            # The try/except block will automatically catch the exception
+            # raised when the timer is about to expire.
+            return self.alphabeta(game, self.search_depth)
+
+        except SearchTimeout:
+            pass  # Handle any actions required after timeout as needed
+
+        # Return the best move from the last completed search iteration
+        return best_move
 
         # TODO: finish this function!
         # raise NotImplementedError
