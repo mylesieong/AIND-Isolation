@@ -270,13 +270,16 @@ class AlphaBetaPlayer(IsolationPlayer):
         self.time_left = time_left
 
         best_move = (-1, -1)
+        iterative_depth = 1
 
         try:
-            return self.alphabeta(game, self.search_depth)
+            while True:
+                print("Iterative-deepening to depth: {}".format(iterative_depth))
+                best_move = self.alphabeta(game, iterative_depth)
+                print("Iterative-deepening result: {}".format(best_move))
+                iterative_depth = iterative_depth + 1
 
         except SearchTimeout:
-            print("Timeout, set the return move as first of legal moves")
-            best_move = game.get_legal_moves()[0]
             pass  # Handle any actions required after timeout as needed
 
         return best_move
