@@ -34,7 +34,6 @@ def custom_score(game, player):
     float
         The heuristic value of the current game state to the specified player.
     """
-    # MYLES IMPLEMENTATION TODO
     # this is open_move_score
     if game.is_loser(player):
         return float("-inf")
@@ -66,8 +65,14 @@ def custom_score_2(game, player):
     float
         The heuristic value of the current game state to the specified player.
     """
-    # TODO: finish this function!
-    # raise NotImplementedError
+    # open move score
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+
+    return float(len(game.get_legal_moves(player)))
 
 
 def custom_score_3(game, player):
@@ -92,8 +97,14 @@ def custom_score_3(game, player):
     float
         The heuristic value of the current game state to the specified player.
     """
-    # TODO: finish this function!
-    # raise NotImplementedError
+    # open move score
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+
+    return float(len(game.get_legal_moves(player)))
 
 
 class IsolationPlayer:
@@ -118,7 +129,7 @@ class IsolationPlayer:
         positive value large enough to allow the function to return before the
         timer expires.
     """
-    def __init__(self, search_depth=3, score_fn=custom_score, timeout=10.):
+    def __init__(self, search_depth=3, score_fn=custom_score, timeout=2.):
         self.search_depth = search_depth
         self.score = score_fn
         self.time_left = None
@@ -164,10 +175,9 @@ class MinimaxPlayer(IsolationPlayer):
         best_move = (-1, -1)
 
         try:
-            return self.minimax(game, self.search_depth)
+            best_move = self.minimax(game, self.search_depth)
 
         except SearchTimeout:
-            print("Timeout, set the return move as first of legal moves")
             best_move = game.get_legal_moves()[0]
             pass  # Handle any actions required after timeout as needed
 
@@ -199,9 +209,6 @@ class MinimaxPlayer(IsolationPlayer):
         return move
 
     def min_value(self, game, depth):
-        """
-        print("    In min_value method at depth:{}".format(depth)) #debug
-        """
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
 
@@ -217,9 +224,6 @@ class MinimaxPlayer(IsolationPlayer):
         return v
 
     def max_value(self, game, depth):
-        """
-        print("    In max_value method at depth:{}".format(depth)) #debug
-        """
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
 
@@ -277,9 +281,7 @@ class AlphaBetaPlayer(IsolationPlayer):
 
         try:
             while True:
-                print("Iterative-deepening to depth: {}".format(iterative_depth))
                 best_move = self.alphabeta(game, iterative_depth)
-                print("Iterative-deepening result: {}".format(best_move))
                 iterative_depth = iterative_depth + 1
 
         except SearchTimeout:
@@ -303,9 +305,6 @@ class AlphaBetaPlayer(IsolationPlayer):
         return move
 
     def min_value(self, game, depth, alpha=float("-inf"), beta=float("inf")):
-        """
-        print("    In min_value method at depth:{}".format(depth)) #debug
-        """
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
 
@@ -326,9 +325,6 @@ class AlphaBetaPlayer(IsolationPlayer):
 
 
     def max_value(self, game, depth, alpha=float("-inf"), beta=float("inf")):
-        """
-        print("    In max_value method at depth:{}".format(depth)) #debug
-        """
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
 
