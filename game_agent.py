@@ -190,8 +190,11 @@ class MinimaxPlayer(IsolationPlayer):
             raise SearchTimeout()
 
         legal_moves = game.get_legal_moves()
-        
-        _, move = max([(self.min_value(game.forecast_move(m), depth - 1), m) for m in legal_moves])
+
+        if legal_moves:
+            _, move = max([(self.min_value(game.forecast_move(m), depth - 1), m) for m in legal_moves])
+        else:
+            move = (-1, -1)
 
         return move
 

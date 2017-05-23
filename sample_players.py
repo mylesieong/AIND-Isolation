@@ -259,9 +259,9 @@ if __name__ == "__main__":
 
     # create an isolation board (by default 7x7)
     player1 = RandomPlayer()
-    #player2 = GreedyPlayer()
-    # player2 = MinimaxPlayer()
-    player2 = AlphaBetaPlayer()
+    # player2 = GreedyPlayer()
+    player2 = MinimaxPlayer()
+    # player2 = AlphaBetaPlayer()
     game = Board(player1, player2)
     print("Player 1 (Random Player) vs. Player 2 (My Player)")
 
