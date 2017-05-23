@@ -171,7 +171,6 @@ class MinimaxPlayer(IsolationPlayer):
             best_move = game.get_legal_moves()[0]
             pass  # Handle any actions required after timeout as needed
 
-        print("Best move of this turn: {}".format(best_move))
         return best_move
 
     def minimax(self, game, depth):
@@ -203,15 +202,24 @@ class MinimaxPlayer(IsolationPlayer):
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
 
-        if depth == 0 :
+        if depth == 0:
             return self.score(game, self)
         
-        legal_moves = game.get_legal_moves(None)
+        legal_moves = game.get_legal_moves()
+        v = float("inf")
+
+        for m in legal_moves:
+            v =  min(v, self.max_value(game.forecast_move(m), depth -1))
+        
+        return v
+        """
+        legal_moves = game.get_legal_moves()
 
         if not legal_moves:
             return float("inf")
 
         return min([self.max_value(game.forecast_move(m), depth -1 ) for m in legal_moves])
+        """
 
     def max_value(self, game, depth):
         """
@@ -223,12 +231,21 @@ class MinimaxPlayer(IsolationPlayer):
         if depth == 0 :
             return self.score(game, self)
         
-        legal_moves = game.get_legal_moves(None)
+        legal_moves = game.get_legal_moves()
+        v = float("-inf")
+
+        for m in legal_moves:
+            v =  max(v, self.min_value(game.forecast_move(m), depth -1))
+        
+        return v
+        """
+        legal_moves = game.get_legal_moves()
 
         if not legal_moves:
             return float("-inf")
 
         return max([self.min_value(game.forecast_move(m), depth -1 ) for m in legal_moves])
+        """
 
 class AlphaBetaPlayer(IsolationPlayer):
     """Game-playing agent that chooses a move using iterative deepening minimax
@@ -268,71 +285,61 @@ class AlphaBetaPlayer(IsolationPlayer):
         """
         self.time_left = time_left
 
-        # Initialize the best move so that this function returns something
-        # in case the search fails due to timeout
         best_move = (-1, -1)
 
         try:
-            # The try/except block will automatically catch the exception
-            # raised when the timer is about to expire.
-            return self.alphabeta(game, self.search_depth)
+            return self.minimax(game, self.search_depth)
 
         except SearchTimeout:
+            print("Timeout, set the return move as first of legal moves")
+            best_move = game.get_legal_moves()[0]
             pass  # Handle any actions required after timeout as needed
 
-        # Return the best move from the last completed search iteration
         return best_move
 
-        # TODO: finish this function!
-        # raise NotImplementedError
-
     def alphabeta(self, game, depth, alpha=float("-inf"), beta=float("inf")):
-        """Implement depth-limited minimax search with alpha-beta pruning as
-        described in the lectures.
-
-        This should be a modified version of ALPHA-BETA-SEARCH in the AIMA text
-        https://github.com/aimacode/aima-pseudocode/blob/master/md/Alpha-Beta-Search.md
-
-        **********************************************************************
-            You MAY add additional methods to this class, or define helper
-                 functions to implement the required functionality.
-        **********************************************************************
-
-        Parameters
-        ----------
-        game : isolation.Board
-            An instance of the Isolation game `Board` class representing the
-            current game state
-
-        depth : int
-            Depth is an integer representing the maximum number of plies to
-            search in the game tree before aborting
-
-        alpha : float
-            Alpha limits the lower bound of search on minimizing layers
-
-        beta : float
-            Beta limits the upper bound of search on maximizing layers
-
-        Returns
-        -------
-        (int, int)
-            The board coordinates of the best move found in the current search;
-            (-1, -1) if there are no legal moves
-
-        Notes
-        -----
-            (1) You MUST use the `self.score()` method for board evaluation
-                to pass the project tests; you cannot call any other evaluation
-                function directly.
-
-            (2) If you use any helper functions (e.g., as shown in the AIMA
-                pseudocode) then you must copy the timer check into the top of
-                each helper function or else your agent will timeout during
-                testing.
+        """
         """
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
 
-        # TODO: finish this function!
-        # raise NotImplementedError
+        legal_moves = game.get_legal_moves()
+        
+        _, move = max([(self.min_value(game.forecast_move(m), depth - 1, alpha, beta), m) for m in legal_moves])
+
+        return move
+
+    def min_value(self, game, depth, alpha=float("-inf"), beta=float("inf")):
+        """
+        print("    In min_value method at depth:{}".format(depth)) #debug
+        """
+        if self.time_left() < self.TIMER_THRESHOLD:
+            raise SearchTimeout()
+
+        if depth == 0 :
+            return self.score(game, self)
+        
+        legal_moves = game.get_legal_moves()
+
+        if not legal_moves:
+            return float("inf")
+
+        return min([self.max_value(game.forecast_move(m), depth - 1, alpha, beta) for m in legal_moves])
+
+    def max_value(self, game, depth, alpha=float("-inf"), beta=float("inf")):
+        """
+        print("    In max_value method at depth:{}".format(depth)) #debug
+        """
+        if self.time_left() < self.TIMER_THRESHOLD:
+            raise SearchTimeout()
+
+        if depth == 0 :
+            return self.score(game, self)
+        
+        legal_moves = game.get_legal_moves()
+
+        if not legal_moves:
+            return float("-inf")
+
+        return max([self.min_value(game.forecast_move(m), depth -1, alpha, beta) for m in legal_moves])
+
