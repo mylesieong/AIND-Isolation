@@ -34,14 +34,21 @@ def custom_score(game, player):
     float
         The heuristic value of the current game state to the specified player.
     """
-    # this is open_move_score
+    # This heuristic returns the density of player's neigborhood  
+    # which is the percentage of legal box-nearby quantity over 
+    # the total boxy-nearby quantity
     if game.is_loser(player):
         return float("-inf")
 
     if game.is_winner(player):
         return float("inf")
 
-    return float(len(game.get_legal_moves(player)))
+    neigborhood = # a list of box position
+    legal_num = len(n for n in neigborhood if n is legal) # legal box qunaity
+    total_num = len(neigborhood)
+    
+    return float(legal_num/total_num)
+    #return float(len(game.get_legal_moves(player)))
 
 def custom_score_2(game, player):
     """Calculate the heuristic value of a game state from the point of view
@@ -65,15 +72,23 @@ def custom_score_2(game, player):
     float
         The heuristic value of the current game state to the specified player.
     """
-    # open move score
+    # This heuristic returns the delta between 2 player's 
+    # density of neigborhood  
     if game.is_loser(player):
         return float("-inf")
 
     if game.is_winner(player):
         return float("inf")
 
-    return float(len(game.get_legal_moves(player)))
+    neigborhood = # a list of box position
+    legal_num = len(n for n in neigborhood if n is legal) # legal box qunaity
+    total_num = len(neigborhood)
+    
+    rival_neigborhood = # a list of box position
+    rival_legal_num = len(n for n in rival_neigborhood if n is legal) # legal box qunaity
+    rival_total_num = len(rival_neigborhood)
 
+    return float(legal_num/total_num) - float(rival_legal_num/rival_total_num)
 
 def custom_score_3(game, player):
     """Calculate the heuristic value of a game state from the point of view
@@ -97,14 +112,18 @@ def custom_score_3(game, player):
     float
         The heuristic value of the current game state to the specified player.
     """
-    # open move score
+    # This heuristic reutrns the open second move score
+    # If box b can be reach by player in 2 steps, then 
+    # b is one of the open second move. 
     if game.is_loser(player):
         return float("-inf")
 
     if game.is_winner(player):
         return float("inf")
 
-    return float(len(game.get_legal_moves(player)))
+    open_first_move = game.get_legal_moves(player)
+    open_second_move = [game.get_legal_moves(m) for m in open_first_move]
+    return float(len(open_second_move))
 
 
 class IsolationPlayer:
