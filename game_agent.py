@@ -43,12 +43,12 @@ def custom_score(game, player):
     if game.is_winner(player):
         return float("inf")
 
-    neigborhood = # a list of box position
-    legal_num = len(n for n in neigborhood if n is legal) # legal box qunaity
+    player_position = get_player_location(player) 
+    neigborhood = [(player_position[0] + i, player_position[1] + j) for i in range(-1,1) for j in range(-1,1) if move_is_legal((player_position[0] + i, player_position[1] + j)] # a list of box position
+    legal_num = len([n for n in neigborhood if n is legal]) # legal box qunaity
     total_num = len(neigborhood)
     
     return float(legal_num/total_num)
-    #return float(len(game.get_legal_moves(player)))
 
 def custom_score_2(game, player):
     """Calculate the heuristic value of a game state from the point of view
