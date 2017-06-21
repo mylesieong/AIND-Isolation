@@ -34,21 +34,23 @@ def custom_score(game, player):
     float
         The heuristic value of the current game state to the specified player.
     """
-    # This heuristic returns the density of player's neigborhood  
-    # which is the percentage of legal box-nearby quantity over 
-    # the total boxy-nearby quantity
+    # This heuristic returns the open second move score
+    # If box b can be reach by player in 2 steps, then 
+    # b is one of the open second move. Open second move
+    # score is the possible move number in total.
     if game.is_loser(player):
         return float("-inf")
 
     if game.is_winner(player):
         return float("inf")
-
-    player_position = get_player_location(player) 
-    neigborhood = [(player_position[0] + i, player_position[1] + j) for i in range(-1,1) for j in range(-1,1) if move_is_legal((player_position[0] + i, player_position[1] + j)] # a list of box position
-    legal_num = len([n for n in neigborhood if n is legal]) # legal box qunaity
-    total_num = len(neigborhood)
     
-    return float(legal_num/total_num)
+    open_first_move = { n for n in game.get_legal_moves(player) }
+    open_second_move = set()
+    for n in open_first_move:
+        temp = { m for m in game.forecast_move(n).get_legal_moves(player) }
+        open_second_move = open_second_move.union(temp)
+
+    return float(len(open_second_move))
 
 def custom_score_2(game, player):
     """Calculate the heuristic value of a game state from the point of view
@@ -72,23 +74,27 @@ def custom_score_2(game, player):
     float
         The heuristic value of the current game state to the specified player.
     """
-    # This heuristic returns the delta between 2 player's 
-    # density of neigborhood  
+    # This heuristic returns the open second move score delta 
+    # between 2 players
     if game.is_loser(player):
         return float("-inf")
 
     if game.is_winner(player):
         return float("inf")
-
-    neigborhood = # a list of box position
-    legal_num = len(n for n in neigborhood if n is legal) # legal box qunaity
-    total_num = len(neigborhood)
     
-    rival_neigborhood = # a list of box position
-    rival_legal_num = len(n for n in rival_neigborhood if n is legal) # legal box qunaity
-    rival_total_num = len(rival_neigborhood)
+    open_first_move_own = { n for n in game.get_legal_moves(player) }
+    open_second_move_own = set()
+    for n in open_first_move_own:
+        temp = { m for m in game.forecast_move(n).get_legal_moves(player) }
+        open_second_move_own = open_second_move_own.union(temp)
 
-    return float(legal_num/total_num) - float(rival_legal_num/rival_total_num)
+    open_first_move_opp = { n for n in game.get_legal_moves(player) }
+    open_second_move_opp = set()
+    for n in open_first_move_opp:
+        temp = { m for m in game.forecast_move(n).get_legal_moves(player) }
+        open_second_move_opp = open_second_move_opp.union(temp)
+
+    return float( len(open_second_move_own) - len(open_second_move_opp) )
 
 def custom_score_3(game, player):
     """Calculate the heuristic value of a game state from the point of view
@@ -112,18 +118,20 @@ def custom_score_3(game, player):
     float
         The heuristic value of the current game state to the specified player.
     """
-    # This heuristic reutrns the open second move score
-    # If box b can be reach by player in 2 steps, then 
-    # b is one of the open second move. 
+    # This heuristic returns the open first move plus second move score  
     if game.is_loser(player):
         return float("-inf")
 
     if game.is_winner(player):
         return float("inf")
+    
+    open_first_move = { n for n in game.get_legal_moves(player) }
+    open_second_move = set()
+    for n in open_first_move:
+        temp = { m for m in game.forecast_move(n).get_legal_moves(player) }
+        open_second_move = open_second_move.union(temp)
 
-    open_first_move = game.get_legal_moves(player)
-    open_second_move = [game.get_legal_moves(m) for m in open_first_move]
-    return float(len(open_second_move))
+    return float( len(open_first_move) + len(open_second_move) )
 
 
 class IsolationPlayer:
@@ -309,17 +317,16 @@ class AlphaBetaPlayer(IsolationPlayer):
         return best_move
 
     def alphabeta(self, game, depth, alpha=float("-inf"), beta=float("inf")):
-        """
-        """
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
 
-        legal_moves = game.get_legal_moves()
+        move = (-1, -1)
         
-        if legal_moves:
-            _, move = max([(self.min_value(game.forecast_move(m), depth - 1, alpha, beta), m) for m in legal_moves])
-        else:
-            move = (-1, -1)
+        for a in game.get_legal_moves():
+            v = self.min_value(game.forecast_move(a), depth - 1, alpha, beta)
+            if v > alpha:
+                alpha = v 
+                move = a
 
         return move
 
@@ -337,11 +344,9 @@ class AlphaBetaPlayer(IsolationPlayer):
             v =  min(v, self.max_value(game.forecast_move(m), depth -1, alpha, beta))
             if v <= alpha:
                 return v
-            else:
-                beta = min(beta, v)
-        
-        return v
+            beta = min(beta, v)
 
+        return v
 
     def max_value(self, game, depth, alpha=float("-inf"), beta=float("inf")):
         if self.time_left() < self.TIMER_THRESHOLD:
@@ -357,7 +362,7 @@ class AlphaBetaPlayer(IsolationPlayer):
             v =  max(v, self.min_value(game.forecast_move(m), depth -1, alpha, beta))
             if v >= beta:
                 return v
-            else:
-                alpha = max(alpha, v)
+            alpha = max(alpha, v)
         
         return v
+
