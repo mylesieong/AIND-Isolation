@@ -156,7 +156,7 @@ class IsolationPlayer:
         positive value large enough to allow the function to return before the
         timer expires.
     """
-    def __init__(self, search_depth=3, score_fn=custom_score, timeout=2.):
+    def __init__(self, search_depth=3, score_fn=custom_score, timeout=10.):
         self.search_depth = search_depth
         self.score = score_fn
         self.time_left = None
@@ -211,13 +211,32 @@ class MinimaxPlayer(IsolationPlayer):
         return best_move
 
     def minimax(self, game, depth):
-        """
+        """Implement depth-limited minimax search algorithm as described in
+        the lectures.
+        This should be a modified version of MINIMAX-DECISION in the AIMA text.
+        https://github.com/aimacode/aima-pseudocode/blob/master/md/Minimax-Decision.md
+        **********************************************************************
+            You MAY add additional methods to this class, or define helper
+                 functions to implement the required functionality.
+        **********************************************************************
+        Parameters
+        ----------
+        game : isolation.Board
+            An instance of the Isolation game `Board` class representing the
+            current game state
+        depth : int
+            Depth is an integer representing the maximum number of plies to
+            search in the game tree before aborting
+        Returns
+        -------
+        (int, int)
+            The board coordinates of the best move found in the current search;
+            (-1, -1) if there are no legal moves
         Notes
         -----
             (1) You MUST use the `self.score()` method for board evaluation
                 to pass the project tests; you cannot call any other evaluation
                 function directly.
-
             (2) If you use any helper functions (e.g., as shown in the AIMA
                 pseudocode) then you must copy the timer check into the top of
                 each helper function or else your agent will timeout during
@@ -236,6 +255,21 @@ class MinimaxPlayer(IsolationPlayer):
         return move
 
     def min_value(self, game, depth):
+        """Implement helper function min_value for minimax search algorithm as
+        described in the lectures.
+        Parameters
+        ----------
+        game : isolation.Board
+            An instance of the Isolation game `Board` class representing the
+            current game state
+        depth : int
+            Depth is an integer representing the maximum number of plies to
+            search in the game tree before aborting
+        Returns
+        -------
+        (int)
+            The score that represent the value to out player of this move 
+        """
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
 
@@ -251,6 +285,21 @@ class MinimaxPlayer(IsolationPlayer):
         return v
 
     def max_value(self, game, depth):
+        """Implement helper function max_value for minimax search algorithm as
+        described in the lectures.
+        Parameters
+        ----------
+        game : isolation.Board
+            An instance of the Isolation game `Board` class representing the
+            current game state
+        depth : int
+            Depth is an integer representing the maximum number of plies to
+            search in the game tree before aborting
+        Returns
+        -------
+        (int)
+            The score that represent the value to out player of this move 
+        """
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
 
@@ -314,9 +363,47 @@ class AlphaBetaPlayer(IsolationPlayer):
         except SearchTimeout:
             pass  # Handle any actions required after timeout as needed
 
+        if game.get_legal_moves() and best_move == (-1,-1):
+            best_move = game.get_legal_moves()[0]
+			
         return best_move
 
     def alphabeta(self, game, depth, alpha=float("-inf"), beta=float("inf")):
+        """Implement depth-limited minimax search with alpha-beta pruning as
+        described in the lectures.
+        This should be a modified version of ALPHA-BETA-SEARCH in the AIMA text
+        https://github.com/aimacode/aima-pseudocode/blob/master/md/Alpha-Beta-Search.md
+        **********************************************************************
+            You MAY add additional methods to this class, or define helper
+                 functions to implement the required functionality.
+        **********************************************************************
+        Parameters
+        ----------
+        game : isolation.Board
+            An instance of the Isolation game `Board` class representing the
+            current game state
+        depth : int
+            Depth is an integer representing the maximum number of plies to
+            search in the game tree before aborting
+        alpha : float
+            Alpha limits the lower bound of search on minimizing layers
+        beta : float
+            Beta limits the upper bound of search on maximizing layers
+        Returns
+        -------
+        (int, int)
+            The board coordinates of the best move found in the current search;
+            (-1, -1) if there are no legal moves
+        Notes
+        -----
+            (1) You MUST use the `self.score()` method for board evaluation
+                to pass the project tests; you cannot call any other evaluation
+                function directly.
+            (2) If you use any helper functions (e.g., as shown in the AIMA
+                pseudocode) then you must copy the timer check into the top of
+                each helper function or else your agent will timeout during
+                testing.
+        """
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
 
@@ -331,6 +418,25 @@ class AlphaBetaPlayer(IsolationPlayer):
         return move
 
     def min_value(self, game, depth, alpha=float("-inf"), beta=float("inf")):
+        """Implement helper function min_value for alpha-beta pruning as
+        described in the lectures.
+        Parameters
+        ----------
+        game : isolation.Board
+            An instance of the Isolation game `Board` class representing the
+            current game state
+        depth : int
+            Depth is an integer representing the maximum number of plies to
+            search in the game tree before aborting
+        alpha : float
+            Alpha limits the lower bound of search on minimizing layers
+        beta : float
+            Beta limits the upper bound of search on maximizing layers
+        Returns
+        -------
+        (int)
+            The score that represent the value to out player of this move 
+        """
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
 
@@ -349,6 +455,25 @@ class AlphaBetaPlayer(IsolationPlayer):
         return v
 
     def max_value(self, game, depth, alpha=float("-inf"), beta=float("inf")):
+        """Implement helper function max_value for alpha-beta pruning as
+        described in the lectures.
+        Parameters
+        ----------
+        game : isolation.Board
+            An instance of the Isolation game `Board` class representing the
+            current game state
+        depth : int
+            Depth is an integer representing the maximum number of plies to
+            search in the game tree before aborting
+        alpha : float
+            Alpha limits the lower bound of search on minimizing layers
+        beta : float
+            Beta limits the upper bound of search on maximizing layers
+        Returns
+        -------
+        (int)
+            The score that represent the value to out player of this move 
+        """
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
 
